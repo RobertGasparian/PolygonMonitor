@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "761881623060",
+    "firebase_url": "https://polygonmonitoring.firebaseio.com",
+    "project_id": "polygonmonitoring",
+    "storage_bucket": "polygonmonitoring.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761881623060:android:714ea9f4b5e9d797",
+        "android_client_info": {
+          "package_name": "com.example.user.polygonmonitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761881623060-dah2psql36te5uev53rrqql6l7bh4god.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB522NNJAbDju7NlCpoqQxdPYTFFBzaiDQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
