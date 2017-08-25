@@ -67,10 +67,10 @@ import java.util.List;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
+        if(intent.hasExtra(MESSAGE)) {
             handleJson(intent.getStringExtra(MESSAGE));
-
-        return START_NOT_STICKY;
+        }
+        return START_STICKY;
     }
 
     public void handleJson(String coordinates) {
