@@ -56,48 +56,50 @@ class ServicesPolygonMonitorService extends Service {
     public int onStartCommand(final Intent intent, int flags, int startId) {
 
 
-        if (intent.hasExtra(ReceiversGeofenceEventReceiver.GEO_ID)) {
-            createLocationRequest();
-            requestingLocationUpdates();
-            locationCallback = new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    for (Location location :
-                            locationResult.getLocations()) {
+        if (intent != null) {
+            if (intent.hasExtra(ReceiversGeofenceEventReceiver.GEO_ID)) {
+                createLocationRequest();
+                requestingLocationUpdates();
+                locationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        for (Location location :
+                                locationResult.getLocations()) {
 
-                        for (int i = 0; i < polygons.size(); i++) {
-                            int key = polygons.keyAt(i);
-                            if (UtilsLocationUtil.isPointInPolygon(location, polygons.get(key))) {
-                                Intent polygonIntent = new Intent();
-                                Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "key is " + polygons.get(key).toString());
-                                polygonIntent.setAction(ReceiversGeofenceEventReceiver.ENTER_POLYGON);
-                                polygonIntent.putExtra(ReceiversGeofenceEventReceiver.GEO_ID, String.valueOf(key));
-                                sendBroadcast(polygonIntent);
-                                polygons.remove(key);
-                                if (polygons.size() == 0) {
-                                    stopSelf();
-                                    Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "polygon monitor stopped");
+                            for (int i = 0; i < polygons.size(); i++) {
+                                int key = polygons.keyAt(i);
+                                if (UtilsLocationUtil.isPointInPolygon(location, polygons.get(key))) {
+                                    Intent polygonIntent = new Intent();
+                                    Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "key is " + polygons.get(key).toString());
+                                    polygonIntent.setAction(ReceiversGeofenceEventReceiver.ENTER_POLYGON);
+                                    polygonIntent.putExtra(ReceiversGeofenceEventReceiver.GEO_ID, String.valueOf(key));
+                                    sendBroadcast(polygonIntent);
+                                    polygons.remove(key);
+                                    if (polygons.size() == 0) {
+                                        stopSelf();
+                                        Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "polygon monitor stopped");
+                                    }
                                 }
                             }
+
+
                         }
-
-
                     }
+                };
+                providerClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    providerClient.requestLocationUpdates(locationRequest, locationCallback, null);
                 }
-            };
-            providerClient = LocationServices.getFusedLocationProviderClient(this);
 
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                providerClient.requestLocationUpdates(locationRequest, locationCallback, null);
-            }
-
-            if (intent.getAction().equals(ReceiversGeofenceEventReceiver.ADD_POLYGON)) {
-                List<LatLng> polyList = UtilsPolyUtil.decode(intent.getStringExtra(ReceiversGeofenceEventReceiver.ENCODED_POLYGON));
-                addPolygon(intent.getStringExtra(ReceiversGeofenceEventReceiver.GEO_ID), polyList);
-            } else if (intent.getAction().equals(ReceiversGeofenceEventReceiver.DELETE_POLYGON)) {
-                Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "starting deleting" + intent.getStringExtra(ReceiversGeofenceEventReceiver.GEO_ID));
-                removePolygon(intent.getStringExtra(ReceiversGeofenceEventReceiver.GEO_ID));
+                if (intent.getAction().equals(ReceiversGeofenceEventReceiver.ADD_POLYGON)) {
+                    List<LatLng> polyList = UtilsPolyUtil.decode(intent.getStringExtra(ReceiversGeofenceEventReceiver.ENCODED_POLYGON));
+                    addPolygon(intent.getStringExtra(ReceiversGeofenceEventReceiver.GEO_ID), polyList);
+                } else if (intent.getAction().equals(ReceiversGeofenceEventReceiver.DELETE_POLYGON)) {
+                    Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "starting deleting" + intent.getStringExtra(ReceiversGeofenceEventReceiver.GEO_ID));
+                    removePolygon(intent.getStringExtra(ReceiversGeofenceEventReceiver.GEO_ID));
+                }
             }
         }
         return START_STICKY;
