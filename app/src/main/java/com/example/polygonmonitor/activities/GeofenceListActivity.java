@@ -12,8 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import com.example.polygon_monitor.HelpersDBHelper;
 import com.example.polygon_monitor.ModelsGeofenceInfo;
+import com.example.polygon_monitor.PolygonMonitorController;
 import com.example.polygonmonitor.adapters.GeofenceListAdapter;
 import com.example.poligonmonitor.R;
 
@@ -26,7 +26,7 @@ public class GeofenceListActivity extends AppCompatActivity {
     private List<ModelsGeofenceInfo> geoList;
     private GeofenceListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
-    private HelpersDBHelper dbHelper;
+    private PolygonMonitorController controller;
 
 
     private final int LOCATION_ACCESS = 1;
@@ -55,7 +55,7 @@ public class GeofenceListActivity extends AppCompatActivity {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    adapter.refreshData(dbHelper.getAllGeofences());
+                    adapter.refreshData(controller.getAllGeofences(GeofenceListActivity.this));
                     refreshLayout.setRefreshing(false);
                 }
             });
@@ -65,8 +65,8 @@ public class GeofenceListActivity extends AppCompatActivity {
     private void init() {
         recyclerView = (RecyclerView) findViewById(R.id.geo_rv);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_main);
-        dbHelper = new HelpersDBHelper(this);
-        geoList = dbHelper.getAllGeofences();
+        controller = PolygonMonitorController.getInstance();
+        geoList = controller.getAllGeofences(this);
         adapter = new GeofenceListAdapter(geoList, GeofenceListActivity.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);

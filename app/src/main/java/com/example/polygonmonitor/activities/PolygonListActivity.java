@@ -7,16 +7,14 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
-
-import com.example.polygon_monitor.HelpersDBHelper;
-
 import com.example.poligonmonitor.R;
+import com.example.polygon_monitor.PolygonMonitorController;
 import com.example.polygonmonitor.adapters.PolygonListAdapter;
 
 
 public class PolygonListActivity extends AppCompatActivity {
 
-    public static final String GEO_ID = "geoId";
+
 
 
     @Override
@@ -26,9 +24,9 @@ public class PolygonListActivity extends AppCompatActivity {
         TextView geoId = (TextView) findViewById(R.id.polygon_geo_id);
         RecyclerView polygonRv = (RecyclerView) findViewById(R.id.polygon_rv);
         Intent intent = getIntent();
-        geoId.setText(intent.getStringExtra(GEO_ID));
-        HelpersDBHelper dbHelper = new HelpersDBHelper(this);
-        PolygonListAdapter adapter = new PolygonListAdapter(this, dbHelper.getPolygon(intent.getStringExtra(GEO_ID)));
+        geoId.setText(intent.getStringExtra(PolygonMonitorController.GEO_ID));
+        PolygonMonitorController controller = PolygonMonitorController.getInstance();
+        PolygonListAdapter adapter = new PolygonListAdapter(this, controller.getPolygon(this,intent.getStringExtra(PolygonMonitorController.GEO_ID)));
         polygonRv.setLayoutManager(new LinearLayoutManager(this));
         polygonRv.setAdapter(adapter);
 

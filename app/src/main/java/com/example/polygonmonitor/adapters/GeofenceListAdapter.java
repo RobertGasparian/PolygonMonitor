@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.example.polygon_monitor.ModelsGeofenceInfo;
+import com.example.polygon_monitor.PolygonMonitorController;
 import com.example.polygonmonitor.activities.PolygonListActivity;
 import com.example.poligonmonitor.R;
 
@@ -48,7 +49,7 @@ public class GeofenceListAdapter extends RecyclerView.Adapter<GeofenceListAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, PolygonListActivity.class);
-                intent.putExtra(PolygonListActivity.GEO_ID,item.getId());
+                intent.putExtra(PolygonMonitorController.GEO_ID,item.getId());
                 context.startActivity(intent);
             }
         });

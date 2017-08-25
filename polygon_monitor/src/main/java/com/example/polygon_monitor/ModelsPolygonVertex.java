@@ -4,7 +4,7 @@ package com.example.polygon_monitor;
  * Created by User on 8/17/2017.
  */
 
-public class ModelsPolygonVertex {
+ class ModelsPolygonVertex {
 
     private String latitude;
     private String longitude;

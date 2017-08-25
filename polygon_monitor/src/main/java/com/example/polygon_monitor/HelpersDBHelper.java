@@ -15,7 +15,7 @@ import java.util.List;
  * Created by User on 8/11/2017.
  */
 
-public class HelpersDBHelper extends SQLiteOpenHelper {
+ class HelpersDBHelper extends SQLiteOpenHelper {
 
 
     private static final int DATABASE_VERSION = 1;
