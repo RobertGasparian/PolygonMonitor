@@ -1,1 +1,1 @@
-include ':app', ':polygon_monitor'
+include ':app'

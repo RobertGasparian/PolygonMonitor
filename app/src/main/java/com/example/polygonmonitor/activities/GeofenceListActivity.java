@@ -29,6 +29,7 @@ public class GeofenceListActivity extends AppCompatActivity {
     private PolygonMonitorController controller;
 
 
+
     private final int LOCATION_ACCESS = 1;
 
     @Override
