@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.util;
+package com.example.polygon_monitor;
 
 /*
  * Copyright 2008, 2013 Google Inc.
@@ -21,7 +21,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.max;
@@ -31,9 +30,9 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.tan;
 import static java.lang.Math.toRadians;
 
-public class HelpersPolyUtil {
+ class UtilsPolyUtil {
 
-    private HelpersPolyUtil() {
+    private UtilsPolyUtil() {
     }
 
     /**
@@ -48,7 +47,7 @@ public class HelpersPolyUtil {
      * Returns mercator(latitude-at-lng3) on the Rhumb line (lat1, lng1) to (lat2, lng2). lng1==0.
      */
     private static double mercatorLatRhumb(double lat1, double lat2, double lng2, double lng3) {
-        return (HelpersMathUtil.mercator(lat1) * (lng2 - lng3) + HelpersMathUtil.mercator(lat2) * lng3) / lng2;
+        return (UtilsMathUtil.mercator(lat1) * (lng2 - lng3) + UtilsMathUtil.mercator(lat2) * lng3) / lng2;
     }
 
     /**
@@ -90,7 +89,7 @@ public class HelpersPolyUtil {
         // Compare through a strictly-increasing function (tan() or mercator()) as convenient.
         return geodesic ?
                 tan(lat3) >= tanLatGC(lat1, lat2, lng2, lng3) :
-                HelpersMathUtil.mercator(lat3) >= mercatorLatRhumb(lat1, lat2, lng2, lng3);
+                UtilsMathUtil.mercator(lat3) >= mercatorLatRhumb(lat1, lat2, lng2, lng3);
     }
 
     /**
@@ -113,7 +112,7 @@ public class HelpersPolyUtil {
         double lng1 = toRadians(prev.longitude);
         int nIntersect = 0;
         for (LatLng point2 : polygon) {
-            double dLng3 = HelpersMathUtil.wrap(lng3 - lng1, -PI, PI);
+            double dLng3 = UtilsMathUtil.wrap(lng3 - lng1, -PI, PI);
             // Special case: point equal to vertex is inside.
             if (lat3 == lat1 && dLng3 == 0) {
                 return true;
@@ -121,7 +120,7 @@ public class HelpersPolyUtil {
             double lat2 = toRadians(point2.latitude);
             double lng2 = toRadians(point2.longitude);
             // Offset longitudes by -lng1.
-            if (intersects(lat1, lat2, HelpersMathUtil.wrap(lng2 - lng1, -PI, PI), lat3, dLng3, geodesic)) {
+            if (intersects(lat1, lat2, UtilsMathUtil.wrap(lng2 - lng1, -PI, PI), lat3, dLng3, geodesic)) {
                 ++nIntersect;
             }
             lat1 = lat2;
@@ -178,8 +177,8 @@ public class HelpersPolyUtil {
         if (size == 0) {
             return false;
         }
-        double tolerance = toleranceEarth / HelpersMathUtil.EARTH_RADIUS;
-        double havTolerance = HelpersMathUtil.hav(tolerance);
+        double tolerance = toleranceEarth / UtilsMathUtil.EARTH_RADIUS;
+        double havTolerance = UtilsMathUtil.hav(tolerance);
         double lat3 = toRadians(point.latitude);
         double lng3 = toRadians(point.longitude);
         LatLng prev = poly.get(closed ? size - 1 : 0);
@@ -203,17 +202,17 @@ public class HelpersPolyUtil {
             // "tolerance" is small.
             double minAcceptable = lat3 - tolerance;
             double maxAcceptable = lat3 + tolerance;
-            double y1 = HelpersMathUtil.mercator(lat1);
-            double y3 = HelpersMathUtil.mercator(lat3);
+            double y1 = UtilsMathUtil.mercator(lat1);
+            double y3 = UtilsMathUtil.mercator(lat3);
             double[] xTry = new double[3];
             for (LatLng point2 : poly) {
                 double lat2 = toRadians(point2.latitude);
-                double y2 = HelpersMathUtil.mercator(lat2);
+                double y2 = UtilsMathUtil.mercator(lat2);
                 double lng2 = toRadians(point2.longitude);
                 if (max(lat1, lat2) >= minAcceptable && min(lat1, lat2) <= maxAcceptable) {
                     // We offset longitudes by -lng1; the implicit x1 is 0.
-                    double x2 = HelpersMathUtil.wrap(lng2 - lng1, -PI, PI);
-                    double x3Base = HelpersMathUtil.wrap(lng3 - lng1, -PI, PI);
+                    double x2 = UtilsMathUtil.wrap(lng2 - lng1, -PI, PI);
+                    double x3Base = UtilsMathUtil.wrap(lng3 - lng1, -PI, PI);
                     xTry[0] = x3Base;
                     // Also explore wrapping of x3Base around the world in both directions.
                     xTry[1] = x3Base + 2 * PI;
@@ -221,11 +220,11 @@ public class HelpersPolyUtil {
                     for (double x3 : xTry) {
                         double dy = y2 - y1;
                         double len2 = x2 * x2 + dy * dy;
-                        double t = len2 <= 0 ? 0 : HelpersMathUtil.clamp((x3 * x2 + (y3 - y1) * dy) / len2, 0, 1);
+                        double t = len2 <= 0 ? 0 : UtilsMathUtil.clamp((x3 * x2 + (y3 - y1) * dy) / len2, 0, 1);
                         double xClosest = t * x2;
                         double yClosest = y1 + t * dy;
-                        double latClosest = HelpersMathUtil.inverseMercator(yClosest);
-                        double havDist = HelpersMathUtil.havDistance(lat3, latClosest, x3 - xClosest);
+                        double latClosest = UtilsMathUtil.inverseMercator(yClosest);
+                        double havDist = UtilsMathUtil.havDistance(lat3, latClosest, x3 - xClosest);
                         if (havDist < havTolerance) {
                             return true;
                         }
@@ -254,29 +253,29 @@ public class HelpersPolyUtil {
         double lng21 = lng2 - lng1;
         double a = sin(lng31) * cosLat3;
         double c = sin(lng21) * cosLat2;
-        double b = sin(lat31) + 2 * sinLat1 * cosLat3 * HelpersMathUtil.hav(lng31);
-        double d = sin(lat21) + 2 * sinLat1 * cosLat2 * HelpersMathUtil.hav(lng21);
+        double b = sin(lat31) + 2 * sinLat1 * cosLat3 * UtilsMathUtil.hav(lng31);
+        double d = sin(lat21) + 2 * sinLat1 * cosLat2 * UtilsMathUtil.hav(lng21);
         double denom = (a * a + b * b) * (c * c + d * d);
         return denom <= 0 ? 1 : (a * d - b * c) / sqrt(denom);
     }
 
     private static boolean isOnSegmentGC(double lat1, double lng1, double lat2, double lng2,
                                          double lat3, double lng3, double havTolerance) {
-        double havDist13 = HelpersMathUtil.havDistance(lat1, lat3, lng1 - lng3);
+        double havDist13 = UtilsMathUtil.havDistance(lat1, lat3, lng1 - lng3);
         if (havDist13 <= havTolerance) {
             return true;
         }
-        double havDist23 = HelpersMathUtil.havDistance(lat2, lat3, lng2 - lng3);
+        double havDist23 = UtilsMathUtil.havDistance(lat2, lat3, lng2 - lng3);
         if (havDist23 <= havTolerance) {
             return true;
         }
         double sinBearing = sinDeltaBearing(lat1, lng1, lat2, lng2, lat3, lng3);
-        double sinDist13 = HelpersMathUtil.sinFromHav(havDist13);
-        double havCrossTrack = HelpersMathUtil.havFromSin(sinDist13 * sinBearing);
+        double sinDist13 = UtilsMathUtil.sinFromHav(havDist13);
+        double havCrossTrack = UtilsMathUtil.havFromSin(sinDist13 * sinBearing);
         if (havCrossTrack > havTolerance) {
             return false;
         }
-        double havDist12 = HelpersMathUtil.havDistance(lat1, lat2, lng1 - lng2);
+        double havDist12 = UtilsMathUtil.havDistance(lat1, lat2, lng1 - lng2);
         double term = havDist12 + havCrossTrack * (1 - 2 * havDist12);
         if (havDist13 > term || havDist23 > term) {
             return false;
@@ -287,7 +286,7 @@ public class HelpersPolyUtil {
         double cosCrossTrack = 1 - 2 * havCrossTrack;
         double havAlongTrack13 = (havDist13 - havCrossTrack) / cosCrossTrack;
         double havAlongTrack23 = (havDist23 - havCrossTrack) / cosCrossTrack;
-        double sinSumAlongTrack = HelpersMathUtil.sinSumFromHav(havAlongTrack13, havAlongTrack23);
+        double sinSumAlongTrack = UtilsMathUtil.sinSumFromHav(havAlongTrack13, havAlongTrack23);
         return sinSumAlongTrack > 0;  // Compare with half-circle == PI using sign of sin().
     }
 
@@ -412,7 +411,7 @@ public class HelpersPolyUtil {
      */
     protected static double distanceToLine(final LatLng p, final LatLng start, final LatLng end) {
         if (start.equals(end)) {
-            HelpersSphericalUtil.computeDistanceBetween(end, p);
+            UtilsSphericalUtil.computeDistanceBetween(end, p);
         }
 
         final double s0lat = toRadians(p.latitude);
@@ -427,14 +426,14 @@ public class HelpersPolyUtil {
         final double u = ((s0lat - s1lat) * s2s1lat + (s0lng - s1lng) * s2s1lng)
                 / (s2s1lat * s2s1lat + s2s1lng * s2s1lng);
         if (u <= 0) {
-            return HelpersSphericalUtil.computeDistanceBetween(p, start);
+            return UtilsSphericalUtil.computeDistanceBetween(p, start);
         }
         if (u >= 1) {
-            return HelpersSphericalUtil.computeDistanceBetween(p, end);
+            return UtilsSphericalUtil.computeDistanceBetween(p, end);
         }
         LatLng sa = new LatLng(p.latitude - start.latitude, p.longitude - start.longitude);
         LatLng sb = new LatLng(u * (end.latitude - start.latitude), u * (end.longitude - start.longitude));
-        return HelpersSphericalUtil.computeDistanceBetween(sa, sb);
+        return UtilsSphericalUtil.computeDistanceBetween(sa, sb);
     }
 
     /**

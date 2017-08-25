@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.services;
+package com.example.polygon_monitor;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -13,11 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import com.dreizak.miniball.highdim.Miniball;
 import com.dreizak.miniball.model.ArrayPointSet;
-import com.example.polygon_monitor.helpers.DBHelper;
-import com.example.polygon_monitor.models.ResponseQueue;
-import com.example.polygon_monitor.models.GeofenceInfo;
-import com.example.polygon_monitor.receivers.GeofenceEventReceiver;
-import com.example.polygon_monitor.util.HelpersPolyUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -37,7 +32,7 @@ import java.util.List;
  * Created by User on 8/14/2017.
  */
 
-public class HandleMessageService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+ class ServicesMessageDefiningService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     private GoogleApiClient googleApiClient;
@@ -92,18 +87,18 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
             geoId = jsonObject.getString(GEO_ID);
             action = jsonObject.getInt(ACTION);
             if (action == ACTION_DELETE) {
-                DBHelper dbHelper = new DBHelper(this);
-                dbHelper.addQueue(new ResponseQueue(geoId, action, null));
+                HelpersDBHelper dbHelper = new HelpersDBHelper(this);
+                dbHelper.addQueue(new ModelsResponseQueue(geoId, action, null));
             } else {
                 JSONArray polygonJson = jsonObject.getJSONArray(POLYGON);
                 for (int i = 0; i < polygonJson.length(); i++) {
                     LatLng latLng = new LatLng(Double.valueOf(polygonJson.getJSONObject(i).getString(LATITUDE)), Double.valueOf(polygonJson.getJSONObject(i).getString(LONGITUDE)));
                     polygon.add(latLng);
                 }
-                polygonString = HelpersPolyUtil.encode(polygon);
-                miniball = getSmallestEnclosingCircle(HelpersPolyUtil.decode(polygonString));
-                DBHelper dbHelper = new DBHelper(HandleMessageService.this);
-                dbHelper.addQueue(new ResponseQueue(geoId, action, polygonString));
+                polygonString = UtilsPolyUtil.encode(polygon);
+                miniball = getSmallestEnclosingCircle(UtilsPolyUtil.decode(polygonString));
+                HelpersDBHelper dbHelper = new HelpersDBHelper(ServicesMessageDefiningService.this);
+                dbHelper.addQueue(new ModelsResponseQueue(geoId, action, polygonString));
 
             }
 
@@ -122,16 +117,16 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
     public void onConnected(@Nullable Bundle bundle) {
 
 
-        DBHelper dbHelper = new DBHelper(this);
-        List<ResponseQueue> queues = dbHelper.getAllQueues();
-        for (ResponseQueue responseQueue :
+        HelpersDBHelper dbHelper = new HelpersDBHelper(this);
+        List<ModelsResponseQueue> queues = dbHelper.getAllQueues();
+        for (ModelsResponseQueue responseQueue :
                 queues) {
             if (responseQueue.getAction() == ACTION_ADD) {
 
                 double[] coordinates = miniball.center();
 
 
-                GeofenceInfo geofenceInfo = new GeofenceInfo();
+                ModelsGeofenceInfo geofenceInfo = new ModelsGeofenceInfo();
                 geofenceInfo.setLatitude(String.valueOf(coordinates[LATITUDE_POSITION]));
                 geofenceInfo.setLongitude(String.valueOf(coordinates[LONGITUDE_POSITION]));
                 float miniballRadius = (float) miniball.radius() * CONVERT_TO_METERS;
@@ -155,7 +150,7 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
     }
 
 
-    public void addGeofenceMonitor(double latitude, double longitude, float radius, final String geoId, final GeofenceInfo geofenceInfo) {
+    public void addGeofenceMonitor(double latitude, double longitude, float radius, final String geoId, final ModelsGeofenceInfo geofenceInfo) {
 
 
         Geofence.Builder builder = new Geofence.Builder();
@@ -169,7 +164,7 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
         requestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
                 .addGeofence(builder.build());
 
-        final Intent intent = new Intent(GeofenceEventReceiver.GEOFENCE_ACTION);
+        final Intent intent = new Intent(ReceiversGeofenceEventReceiver.GEOFENCE_ACTION);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, PENDING_INTENT_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         createGoogleApi(this);
 
@@ -182,7 +177,7 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
                 public void onResult(@NonNull Status status) {
                     if (status.isSuccess()) {
 
-                        DBHelper dbHelper = new DBHelper(HandleMessageService.this);
+                        HelpersDBHelper dbHelper = new HelpersDBHelper(ServicesMessageDefiningService.this);
                         dbHelper.addGeofenceInfo(geofenceInfo);
                         for (int i = 0; i < polygon.size(); i++) {
 
@@ -197,7 +192,7 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
 
                     } else {
 
-                        DBHelper dbHelper = new DBHelper(HandleMessageService.this);
+                        HelpersDBHelper dbHelper = new HelpersDBHelper(ServicesMessageDefiningService.this);
                         dbHelper.deleteQueue(geofenceInfo.getId());
                         if (dbHelper.getAllQueues().size() == 0) {
                             googleApiClient.disconnect();
@@ -224,12 +219,12 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
             public void onResult(@NonNull Status status) {
                 if (status.isSuccess()) {
 
-                    DBHelper dbHelper = new DBHelper(HandleMessageService.this);
+                    HelpersDBHelper dbHelper = new HelpersDBHelper(ServicesMessageDefiningService.this);
                     dbHelper.deleteGeofenceInfo(id);
                     dbHelper.deletePolygon(id);
-                    Intent intent = new Intent(HandleMessageService.this, LocationPolygonMonitorService.class);
-                    intent.setAction(GeofenceEventReceiver.DELETE_POLYGON);
-                    intent.putExtra(GeofenceEventReceiver.GEO_ID, id);
+                    Intent intent = new Intent(ServicesMessageDefiningService.this, ServicesPolygonMonitorService.class);
+                    intent.setAction(ReceiversGeofenceEventReceiver.DELETE_POLYGON);
+                    intent.putExtra(ReceiversGeofenceEventReceiver.GEO_ID, id);
                     startService(intent);
                     dbHelper.deleteQueue(id);
                     if (dbHelper.getAllQueues().size() == 0) {
@@ -239,7 +234,7 @@ public class HandleMessageService extends Service implements GoogleApiClient.Con
 
                 } else {
 
-                    DBHelper dbHelper = new DBHelper(HandleMessageService.this);
+                    HelpersDBHelper dbHelper = new HelpersDBHelper(ServicesMessageDefiningService.this);
                     dbHelper.deleteQueue(id);
 
                     if (dbHelper.getAllQueues().size() == 0) {

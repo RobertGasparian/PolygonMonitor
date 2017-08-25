@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.util;
+package com.example.polygon_monitor;
 
 
 import android.location.Location;
@@ -12,7 +12,7 @@ import static java.util.Collections.sort;
 /**
  * Created by polbins on 14/05/2016.
  */
-public class HelpersLocationHelper {
+ class UtilsLocationUtil {
 
 
 
@@ -22,8 +22,8 @@ public class HelpersLocationHelper {
 
 
     public static boolean isPointInPolygon(Location location, List<LatLng> locations) {
-        return HelpersPolyUtil.containsLocation(
-                HelpersLocationHelper.convertLocationToLatLng(location), locations, true);
+        return UtilsPolyUtil.containsLocation(
+                UtilsLocationUtil.convertLocationToLatLng(location), locations, true);
     }
 
 

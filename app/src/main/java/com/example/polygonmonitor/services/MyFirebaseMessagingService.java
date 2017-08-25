@@ -1,6 +1,6 @@
 package com.example.polygonmonitor.services;
 
-import com.example.polygon_monitor.controllers.PolygonMonitorController;
+import com.example.polygon_monitor.PolygonMonitorController;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

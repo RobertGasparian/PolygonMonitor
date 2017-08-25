@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.util;
+package com.example.polygon_monitor;
 
 /*
  * Copyright 2013 Google Inc.
@@ -17,9 +17,7 @@ package com.example.polygon_monitor.util;
  */
 
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.List;
-
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.asin;
@@ -31,9 +29,9 @@ import static java.lang.Math.tan;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
-class HelpersSphericalUtil {
+class UtilsSphericalUtil {
 
-    private HelpersSphericalUtil() {
+    private UtilsSphericalUtil() {
     }
 
     /**
@@ -52,7 +50,7 @@ class HelpersSphericalUtil {
         double heading = atan2(
                 sin(dLng) * cos(toLat),
                 cos(fromLat) * sin(toLat) - sin(fromLat) * cos(toLat) * cos(dLng));
-        return HelpersMathUtil.wrap(toDegrees(heading), -180, 180);
+        return UtilsMathUtil.wrap(toDegrees(heading), -180, 180);
     }
 
     /**
@@ -64,7 +62,7 @@ class HelpersSphericalUtil {
      * @param heading  The heading in degrees clockwise from north.
      */
     public static LatLng computeOffset(LatLng from, double distance, double heading) {
-        distance /= HelpersMathUtil.EARTH_RADIUS;
+        distance /= UtilsMathUtil.EARTH_RADIUS;
         heading = toRadians(heading);
         // http://williams.best.vwh.net/avform.htm#LL
         double fromLat = toRadians(from.latitude);
@@ -92,7 +90,7 @@ class HelpersSphericalUtil {
      */
     public static LatLng computeOffsetOrigin(LatLng to, double distance, double heading) {
         heading = toRadians(heading);
-        distance /= HelpersMathUtil.EARTH_RADIUS;
+        distance /= UtilsMathUtil.EARTH_RADIUS;
         // http://lists.maptools.org/pipermail/proj/2008-October/003939.html
         double n1 = cos(distance);
         double n2 = sin(distance) * cos(heading);
@@ -167,7 +165,7 @@ class HelpersSphericalUtil {
      * Returns distance on the unit sphere; the arguments are in radians.
      */
     private static double distanceRadians(double lat1, double lng1, double lat2, double lng2) {
-        return HelpersMathUtil.arcHav(HelpersMathUtil.havDistance(lat1, lat2, lng1 - lng2));
+        return UtilsMathUtil.arcHav(UtilsMathUtil.havDistance(lat1, lat2, lng1 - lng2));
     }
 
     /**
@@ -183,7 +181,7 @@ class HelpersSphericalUtil {
      * Returns the distance between two LatLngs, in meters.
      */
     public static double computeDistanceBetween(LatLng from, LatLng to) {
-        return computeAngleBetween(from, to) * HelpersMathUtil.EARTH_RADIUS;
+        return computeAngleBetween(from, to) * UtilsMathUtil.EARTH_RADIUS;
     }
 
     /**
@@ -204,7 +202,7 @@ class HelpersSphericalUtil {
             prevLat = lat;
             prevLng = lng;
         }
-        return length * HelpersMathUtil.EARTH_RADIUS;
+        return length * UtilsMathUtil.EARTH_RADIUS;
     }
 
     /**
@@ -226,7 +224,7 @@ class HelpersSphericalUtil {
      * @return The loop's area in square meters.
      */
     public static double computeSignedArea(List<LatLng> path) {
-        return computeSignedArea(path, HelpersMathUtil.EARTH_RADIUS);
+        return computeSignedArea(path, UtilsMathUtil.EARTH_RADIUS);
     }
 
     /**

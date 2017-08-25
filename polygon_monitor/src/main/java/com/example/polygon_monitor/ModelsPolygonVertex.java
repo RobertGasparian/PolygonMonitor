@@ -1,16 +1,16 @@
-package com.example.polygon_monitor.models;
+package com.example.polygon_monitor;
 
 /**
  * Created by User on 8/17/2017.
  */
 
-public class PolygonVertex {
+public class ModelsPolygonVertex {
 
     private String latitude;
     private String longitude;
     private int order;
 
-    public PolygonVertex(String latitude, String longitude, int order) {
+    public ModelsPolygonVertex(String latitude, String longitude, int order) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.order = order;

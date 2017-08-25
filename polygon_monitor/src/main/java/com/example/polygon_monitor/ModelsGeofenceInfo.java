@@ -1,10 +1,9 @@
-package com.example.polygon_monitor.models;
+package com.example.polygon_monitor;
 
 /**
  * Created by Rob on 8/11/2017.
  */
-
-public class GeofenceInfo {
+ public class ModelsGeofenceInfo {
 
 
     private String latitude;
@@ -12,10 +11,10 @@ public class GeofenceInfo {
     private String radius;
     private String id;
 
-    public GeofenceInfo() {
+    public ModelsGeofenceInfo() {
     }
 
-    public GeofenceInfo(String id, String latitude, String longitude, String radius) {
+    public ModelsGeofenceInfo(String id, String latitude, String longitude, String radius) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;

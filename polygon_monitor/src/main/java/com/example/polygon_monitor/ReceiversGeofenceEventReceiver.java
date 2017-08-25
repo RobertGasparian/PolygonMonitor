@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.receivers;
+package com.example.polygon_monitor;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -7,11 +7,6 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.polygon_monitor.R;
-import com.example.polygon_monitor.controllers.PolygonMonitorController;
-import com.example.polygon_monitor.helpers.DBHelper;
-import com.example.polygon_monitor.services.LocationPolygonMonitorService;
-import com.example.polygon_monitor.util.HelpersPolyUtil;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.maps.model.LatLng;
@@ -19,13 +14,13 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 
 
-public class GeofenceEventReceiver extends BroadcastReceiver {
+ class ReceiversGeofenceEventReceiver extends BroadcastReceiver {
 
     public static final String GEOFENCE_ACTION = "com.example.polygon_monitor.receivers.ENTER_INTENT";
     public static final String ENTER_POLYGON = "com.example.polygon_monitor.receivers.ENTER_POLYGON_INTENT";
     public static final String ADD_POLYGON = "add polygon";
     public static final String DELETE_POLYGON = "delete polygon";
-    public static final String POLYGON_TO_STRING = "polygonString";
+    public static final String ENCODED_POLYGON = "polygonString";
     public static final String GEO_ID = "geoId";
 
 
@@ -38,16 +33,16 @@ public class GeofenceEventReceiver extends BroadcastReceiver {
 
             if (geofencingType == Geofence.GEOFENCE_TRANSITION_ENTER) {
 
-                DBHelper dbHelper = new DBHelper(context);
+                HelpersDBHelper dbHelper = new HelpersDBHelper(context);
                 List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
                 for (Geofence triggeredGeofence :
                         triggeringGeofences) {
                     List<LatLng> polygon = dbHelper.getPolygon(triggeredGeofence.getRequestId());
-                    String polygonToString = HelpersPolyUtil.encode(polygon);
-                    Intent serviceIntent = new Intent(context, LocationPolygonMonitorService.class);
+                    String encodedPolygon = UtilsPolyUtil.encode(polygon);
+                    Intent serviceIntent = new Intent(context, ServicesPolygonMonitorService.class);
                     serviceIntent.setAction(ADD_POLYGON);
                     Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "geo enter - " + triggeredGeofence.getRequestId());
-                    serviceIntent.putExtra(POLYGON_TO_STRING, polygonToString);
+                    serviceIntent.putExtra(ENCODED_POLYGON, encodedPolygon);
                     serviceIntent.putExtra(GEO_ID, triggeredGeofence.getRequestId());
                     context.startService(serviceIntent);
                 }
@@ -61,7 +56,7 @@ public class GeofenceEventReceiver extends BroadcastReceiver {
                 for (Geofence triggeredGeofence :
                         triggeringGeofences) {
 
-                    Intent serviceIntent = new Intent(context, LocationPolygonMonitorService.class);
+                    Intent serviceIntent = new Intent(context, ServicesPolygonMonitorService.class);
                     serviceIntent.setAction(DELETE_POLYGON);
                     Log.d(PolygonMonitorController.POLYGON_MONITOR_TAG, "deleting key is " + triggeredGeofence.getRequestId());
                     serviceIntent.putExtra(GEO_ID, triggeredGeofence.getRequestId());

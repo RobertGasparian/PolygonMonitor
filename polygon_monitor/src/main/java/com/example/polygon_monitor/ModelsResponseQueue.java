@@ -1,10 +1,10 @@
-package com.example.polygon_monitor.models;
+package com.example.polygon_monitor;
 
 /**
  * Created by User on 8/15/2017.
  */
 
-public class ResponseQueue {
+ class ModelsResponseQueue {
 
     private String geoId;
     private int queueId;
@@ -12,7 +12,7 @@ public class ResponseQueue {
     private String JSON = null;
 
 
-    public ResponseQueue(int queueId, String geoId, int action, String JSON) {
+    public ModelsResponseQueue(int queueId, String geoId, int action, String JSON) {
         this.geoId = geoId;
         this.queueId = queueId;
         this.action = action;
@@ -20,7 +20,7 @@ public class ResponseQueue {
     }
 
 
-    public ResponseQueue(String geoId, int action, String JSON) {
+    public ModelsResponseQueue(String geoId, int action, String JSON) {
         this.geoId = geoId;
         this.action = action;
         this.JSON = JSON;

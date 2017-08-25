@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.helpers;
+package com.example.polygon_monitor;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,10 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.polygon_monitor.controllers.PolygonMonitorController;
-import com.example.polygon_monitor.models.ResponseQueue;
-import com.example.polygon_monitor.models.GeofenceInfo;
-import com.example.polygon_monitor.models.PolygonVertex;
 import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +15,7 @@ import java.util.List;
  * Created by User on 8/11/2017.
  */
 
-public class DBHelper extends SQLiteOpenHelper {
+public class HelpersDBHelper extends SQLiteOpenHelper {
 
 
     private static final int DATABASE_VERSION = 1;
@@ -47,7 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String SELECT_FROM_ALL = "SELECT  * FROM ";
 
 
-    public DBHelper(Context context) {
+    public HelpersDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -87,7 +83,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addGeofenceInfo(GeofenceInfo geofenceInfo) {
+    public void addGeofenceInfo(ModelsGeofenceInfo geofenceInfo) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         if (!checkIdExistence(geofenceInfo.getId())) {
@@ -105,7 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void updateGeofence(GeofenceInfo geofenceInfo) {
+    public void updateGeofence(ModelsGeofenceInfo geofenceInfo) {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -144,17 +140,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<GeofenceInfo> getAllGeofences() {
+    public List<ModelsGeofenceInfo> getAllGeofences() {
 
-        List<GeofenceInfo> geofenceInfos = new ArrayList<>();
+        List<ModelsGeofenceInfo> geofenceInfos = new ArrayList<>();
         String selectQuery = SELECT_FROM_ALL + TABLE_GEOFENCES;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         while (cursor.moveToNext()) {
-            GeofenceInfo geofenceInfo = new GeofenceInfo(cursor.getString(cursor.getColumnIndex(DBHelper._ID)),
-                    cursor.getString(cursor.getColumnIndex(DBHelper.LATITUDE)),
-                    cursor.getString(cursor.getColumnIndex(DBHelper.LONGITUDE)),
-                    cursor.getString(cursor.getColumnIndex(DBHelper.RADIUS)));
+            ModelsGeofenceInfo geofenceInfo = new ModelsGeofenceInfo(cursor.getString(cursor.getColumnIndex(HelpersDBHelper._ID)),
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.LATITUDE)),
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.LONGITUDE)),
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.RADIUS)));
             geofenceInfos.add(geofenceInfo);
 
         }
@@ -164,7 +160,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void addQueue(ResponseQueue responseQueue) {
+    public void addQueue(ModelsResponseQueue responseQueue) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -177,17 +173,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<ResponseQueue> getAllQueues() {
+    public List<ModelsResponseQueue> getAllQueues() {
 
-        List<ResponseQueue> responseQueues = new ArrayList<>();
+        List<ModelsResponseQueue> responseQueues = new ArrayList<>();
         String selectQuery = SELECT_FROM_ALL + TABLE_QUEUE;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         while (cursor.moveToNext()) {
-            ResponseQueue responseQueue = new ResponseQueue(cursor.getInt(cursor.getColumnIndex(DBHelper._ID)),
-                    cursor.getString(cursor.getColumnIndex(DBHelper.GEOFENCE_ID)),
-                    cursor.getInt(cursor.getColumnIndex(DBHelper.ACTION)),
-                    cursor.getString(cursor.getColumnIndex(DBHelper.JSON_STRING)));
+            ModelsResponseQueue responseQueue = new ModelsResponseQueue(cursor.getInt(cursor.getColumnIndex(HelpersDBHelper._ID)),
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.GEOFENCE_ID)),
+                    cursor.getInt(cursor.getColumnIndex(HelpersDBHelper.ACTION)),
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.JSON_STRING)));
             responseQueues.add(responseQueue);
 
         }
@@ -203,7 +199,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_QUEUE, new String[]{_ID, GEOFENCE_ID, ACTION, JSON_STRING}, GEOFENCE_ID + QUERY_MARK, new String[]{String.valueOf(id)}, null, null, null);
         cursor.moveToFirst();
-        int deleting_id = cursor.getInt(cursor.getColumnIndex(DBHelper._ID));
+        int deleting_id = cursor.getInt(cursor.getColumnIndex(HelpersDBHelper._ID));
         cursor.close();
         db.delete(TABLE_QUEUE, _ID + QUERY_MARK, new String[]{String.valueOf(deleting_id)});
         db.close();
@@ -232,14 +228,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<LatLng> getPolygon(String geoId){
 
         List<LatLng> polygons = new ArrayList<>();
-        List<PolygonVertex> withOrders = new ArrayList<>();
+        List<ModelsPolygonVertex> withOrders = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_POLYGON, new String[]{LATITUDE, LONGITUDE, CLASSIFY}, GEOFENCE_ID + QUERY_MARK, new String[]{geoId}, null, null, null);
         while (cursor.moveToNext()){
-            PolygonVertex polygonVertex = new PolygonVertex(
-                    cursor.getString(cursor.getColumnIndex(DBHelper.LATITUDE)),
-                    cursor.getString(cursor.getColumnIndex(DBHelper.LONGITUDE)),
-                    cursor.getInt(cursor.getColumnIndex(DBHelper.CLASSIFY)));
+            ModelsPolygonVertex polygonVertex = new ModelsPolygonVertex(
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.LATITUDE)),
+                    cursor.getString(cursor.getColumnIndex(HelpersDBHelper.LONGITUDE)),
+                    cursor.getInt(cursor.getColumnIndex(HelpersDBHelper.CLASSIFY)));
             withOrders.add(polygonVertex);
         }
 

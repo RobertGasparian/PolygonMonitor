@@ -12,8 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import com.example.polygon_monitor.helpers.DBHelper;
-import com.example.polygon_monitor.models.GeofenceInfo;
+import com.example.polygon_monitor.HelpersDBHelper;
+import com.example.polygon_monitor.ModelsGeofenceInfo;
 import com.example.polygonmonitor.adapters.GeofenceListAdapter;
 import com.example.poligonmonitor.R;
 
@@ -23,10 +23,10 @@ import java.util.List;
 public class GeofenceListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private List<GeofenceInfo> geoList;
+    private List<ModelsGeofenceInfo> geoList;
     private GeofenceListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
-    private DBHelper dbHelper;
+    private HelpersDBHelper dbHelper;
 
 
     private final int LOCATION_ACCESS = 1;
@@ -65,7 +65,7 @@ public class GeofenceListActivity extends AppCompatActivity {
     private void init() {
         recyclerView = (RecyclerView) findViewById(R.id.geo_rv);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_main);
-        dbHelper = new DBHelper(this);
+        dbHelper = new HelpersDBHelper(this);
         geoList = dbHelper.getAllGeofences();
         adapter = new GeofenceListAdapter(geoList, GeofenceListActivity.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

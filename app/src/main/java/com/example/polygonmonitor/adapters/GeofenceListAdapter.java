@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.example.polygon_monitor.models.GeofenceInfo;
+import com.example.polygon_monitor.ModelsGeofenceInfo;
 import com.example.polygonmonitor.activities.PolygonListActivity;
 import com.example.poligonmonitor.R;
 
@@ -21,11 +21,11 @@ import java.util.List;
 
 public class GeofenceListAdapter extends RecyclerView.Adapter<GeofenceListAdapter.GeoHolder>{
 
-    private List<GeofenceInfo> itemList;
+    private List<ModelsGeofenceInfo> itemList;
     private Context context;
 
 
-    public GeofenceListAdapter(List<GeofenceInfo> itemList, Context context) {
+    public GeofenceListAdapter(List<ModelsGeofenceInfo> itemList, Context context) {
         this.itemList = itemList;
         this.context = context;
     }
@@ -39,7 +39,7 @@ public class GeofenceListAdapter extends RecyclerView.Adapter<GeofenceListAdapte
     @Override
     public void onBindViewHolder(GeoHolder holder, int position) {
 
-        final GeofenceInfo item = itemList.get(position);
+        final ModelsGeofenceInfo item = itemList.get(position);
         holder.latitude.setText(item.getLatitude());
         holder.longitude.setText(item.getLongitude());
         holder.radius.setText(item.getRadius());
@@ -61,7 +61,7 @@ public class GeofenceListAdapter extends RecyclerView.Adapter<GeofenceListAdapte
     }
 
 
-    public void refreshData(List<GeofenceInfo> list) {
+    public void refreshData(List<ModelsGeofenceInfo> list) {
         itemList=list;
         notifyDataSetChanged();
     }

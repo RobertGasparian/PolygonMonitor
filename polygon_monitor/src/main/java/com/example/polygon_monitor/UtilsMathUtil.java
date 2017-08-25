@@ -1,4 +1,4 @@
-package com.example.polygon_monitor.util;
+package com.example.polygon_monitor;
 
 
 /*
@@ -28,11 +28,11 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.tan;
 
 /**
- * Utility functions that are used my both HelpersPolyUtil and HelpersSphericalUtil.
+ * Utility functions that are used my both UtilsPolyUtil and UtilsSphericalUtil.
  */
-class HelpersMathUtil {
+class UtilsMathUtil {
 
-    protected HelpersMathUtil() {
+    protected UtilsMathUtil() {
     }
 
     /**

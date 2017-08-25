@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
-import com.example.polygon_monitor.helpers.DBHelper;
+import com.example.polygon_monitor.HelpersDBHelper;
 
 import com.example.poligonmonitor.R;
 import com.example.polygonmonitor.adapters.PolygonListAdapter;
@@ -27,7 +27,7 @@ public class PolygonListActivity extends AppCompatActivity {
         RecyclerView polygonRv = (RecyclerView) findViewById(R.id.polygon_rv);
         Intent intent = getIntent();
         geoId.setText(intent.getStringExtra(GEO_ID));
-        DBHelper dbHelper = new DBHelper(this);
+        HelpersDBHelper dbHelper = new HelpersDBHelper(this);
         PolygonListAdapter adapter = new PolygonListAdapter(this, dbHelper.getPolygon(intent.getStringExtra(GEO_ID)));
         polygonRv.setLayoutManager(new LinearLayoutManager(this));
         polygonRv.setAdapter(adapter);

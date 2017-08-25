@@ -1,9 +1,7 @@
-package com.example.polygon_monitor.controllers;
+package com.example.polygon_monitor;
 
 import android.content.Context;
 import android.content.Intent;
-
-import com.example.polygon_monitor.services.HandleMessageService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,8 +38,8 @@ public class PolygonMonitorController {
 
         if (isMessageValid(message)) {
 
-            Intent intent = new Intent(context, HandleMessageService.class);
-            intent.putExtra(HandleMessageService.MESSAGE, message);
+            Intent intent = new Intent(context, ServicesMessageDefiningService.class);
+            intent.putExtra(ServicesMessageDefiningService.MESSAGE, message);
             context.startService(intent);
         }
     }
